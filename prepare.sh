@@ -7,7 +7,7 @@ echo "Install dependencies"
 
 sudo add-apt-repository -y ppa:v-launchpad-jochen-sprickerhof-de/sbuild
 sudo apt update
-sudo apt install -y mmdebstrap distro-info debian-archive-keyring ccache curl vcstool python3-rosdep2 sbuild catkin python3-bloom
+sudo apt install -y mmdebstrap distro-info debian-archive-keyring ccache curl vcstool python3-rosdep2 sbuild catkin python3-bloom schroot
 
 echo "Setup build environment"
 
