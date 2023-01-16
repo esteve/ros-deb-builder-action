@@ -3,6 +3,8 @@
 
 set -ex
 
+whoami
+
 if debian-distro-info --all | grep -q "$DEB_DISTRO"; then
   DISTRIBUTION=debian
 elif ubuntu-distro-info --all | grep -q "$DEB_DISTRO"; then
