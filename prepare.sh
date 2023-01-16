@@ -13,6 +13,8 @@ echo "Setup build environment"
 
 sudo mkdir -p /home/runner/.cache/ccache
 
+sudo sbuild-createchroot jammy /srv/chroot/jammy-amd64 http://archive.ubuntu.com/ubuntu/
+
 mkdir -p ~/.cache/sbuild
 mmdebstrap --variant=buildd --include=apt,ccache \
   --customize-hook='chroot "$1" update-ccache-symlinks' \
