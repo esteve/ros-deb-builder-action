@@ -78,7 +78,7 @@ for PKG_PATH in $(catkin_topological_order --only-folders); do
   echo 11 > debian/compat
 
   # dpkg-source-opts: no need for upstream.tar.gz
-  sbuild --verbose --chroot-mode=unshare --no-clean-source --no-run-lintian \
+  sbuild --verbose --chroot-mode=sudo --no-clean-source --no-run-lintian \
     --dpkg-source-opts="-Zgzip -z1 --format=1.0 -sn" --build-dir=/home/runner/apt_repo \
     --extra-package=/home/runner/apt_repo "$@"
   )
