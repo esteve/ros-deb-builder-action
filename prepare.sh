@@ -19,6 +19,8 @@ whoami
 
 sudo sbuild-adduser `whoami`
 
+cp /usr/share/doc/sbuild/examples/example.sbuildrc /root/.sbuildrc
+
 mkdir -p ~/.cache/sbuild
 mmdebstrap --variant=buildd --include=apt,ccache \
   --customize-hook='chroot "$1" update-ccache-symlinks' \
