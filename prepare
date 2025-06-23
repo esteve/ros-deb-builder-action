@@ -60,7 +60,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends pytho
 echo "Setup build environment"
 
 mkdir -p "$HOME/.cache/sbuild"
-mmdebstrap --variant=buildd --include=apt,ccache,ca-certificates --arch="$DEB_ARCH" \
+mmdebstrap --variant=buildd --include=apt,ccache,ca-certificates,eatmydata --arch="$DEB_ARCH" \
   --customize-hook='chroot "$1" update-ccache-symlinks' \
   --components=main,universe "$DEB_DISTRO" "$HOME/.cache/sbuild/$DEB_DISTRO-$DEB_ARCH.tar"
 
@@ -77,6 +77,7 @@ $build_path = "/build/package/";
 $dsc_dir = "package";
 $unshare_bind_mounts = [ { directory => "$HOME/.cache/ccache", mountpoint => "/build/ccache" } ];
 $verbose = 1;
+$build_env_cmnd = /usr/bin/eatmydata;
 EOF
 echo "$SBUILD_CONF" >> "$HOME/.sbuildrc"
 
