@@ -36,7 +36,7 @@ test "$VERSION_CODENAME" = "jammy" && sudo cp "$(dirname "$0")/jammy-sbuild.sour
 test "$VERSION_CODENAME" = "noble" && sudo cp "$(dirname "$0")/noble-ros.sources" /etc/apt/sources.list.d/
 sudo apt update
 
-sudo DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends sbuild mmdebstrap distro-info debian-archive-keyring ccache uidmap curl git-lfs
+sudo DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends sbuild mmdebstrap distro-info debian-archive-keyring ccache uidmap curl git-lfs squid-deb-proxy
 
 if [ "$DEB_ARCH" != "$(dpkg --print-architecture)" ]; then
   # use qemu to translate architecture
@@ -62,6 +62,7 @@ echo "Setup build environment"
 mkdir -p "$HOME/.cache/sbuild"
 mmdebstrap --variant=buildd --include=apt,ccache,ca-certificates,eatmydata --arch="$DEB_ARCH" \
   --customize-hook='chroot "$1" update-ccache-symlinks' \
+  --aptopt='Acquire::http { Proxy "http://127.0.0.1:8000"; }'
   --components=main,universe "$DEB_DISTRO" "$HOME/.cache/sbuild/$DEB_DISTRO-$DEB_ARCH.tar"
 
 ccache --zero-stats --max-size=10.0G
