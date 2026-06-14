@@ -55,6 +55,11 @@ For example, set this to `0~` to generate versions like
 package like `1.2.3-1`, so the official package takes precedence when it becomes
 available.
 
+For commits after a tag, generated package versions use the number of commits
+since the tag, not the commit SHA, so newer commits sort higher without relying
+on lexicographic SHA ordering. For example, one commit after tag `1.2.3` becomes
+`1.2.3+git1-0~2026.06.14.22.00`.
+
 
 ## `SKIP_ROS_REPOSITORY`
 
