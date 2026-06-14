@@ -119,9 +119,11 @@ for PKG_PATH in $(colcon list --topological-order --paths-only || catkin_topolog
 
   ROS_HOME="$APT_REPO/ros" BLOOM_SKIP_ROSDEP_UPDATE=1 bloom-generate "${BLOOM}debian" --os-name="$DISTRIBUTION" --os-version="$DEB_DISTRO" --ros-distro="$ROS_DISTRO"
 
-  # Set the version based on the checked out tag that contain at least on digit
-  # strip any leading non digits as they are not part of the version number
-  sed -i "1 s@([^)]*)@($( (git describe --tag  --match "*[0-9]*" 2>/dev/null || echo 0) | sed -e 's@^[^0-9]*@@' -e 's@_@~@g')-$(date +%Y.%m.%d.%H.%M))@" debian/changelog
+  # Set the version based on the checked out tag that contains at least one digit.
+  # Strip any leading non-digits as they are not part of the version number.
+  UPSTREAM_VERSION="$( (git describe --tag  --match "*[0-9]*" 2>/dev/null || echo 0) | sed -e 's@^[^0-9]*@@' -e 's@_@~@g')"
+  DEBIAN_REVISION="${DEBIAN_REVISION_PREFIX}$(date +%Y.%m.%d.%H.%M)"
+  sed -i "1 s@([^)]*)@(${UPSTREAM_VERSION}-${DEBIAN_REVISION})@" debian/changelog
 
   # https://github.com/ros-infrastructure/bloom/pull/643
   echo 11 > debian/compat

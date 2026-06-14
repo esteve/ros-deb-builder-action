@@ -46,6 +46,15 @@ list:
     - package2
 ```
 
+## `DEBIAN_REVISION_PREFIX`
+
+Prefix prepended to timestamp Debian revisions.
+
+For example, set this to `0~` to generate versions like
+`1.2.3-0~2026.06.14.22.00`. Such packages sort lower than an official release
+package like `1.2.3-1`, so the official package takes precedence when it becomes
+available.
+
 
 ## `SKIP_ROS_REPOSITORY`
 
