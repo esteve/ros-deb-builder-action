@@ -51,14 +51,15 @@ list:
 Prefix prepended to timestamp Debian revisions.
 
 For example, set this to `0~` to generate versions like
-`1.2.3-0~2026.06.14.22.00`. Such packages sort lower than an official release
-package like `1.2.3-1`, so the official package takes precedence when it becomes
-available.
+`1.2.3-0~2026.06.14.22.00+gabcdef123456`. Such packages sort lower than an
+official release package like `1.2.3-1`, so the official package takes
+precedence when it becomes available.
 
 For commits after a tag, generated package versions use the number of commits
 since the tag, not the commit SHA, so newer commits sort higher without relying
 on lexicographic SHA ordering. For example, one commit after tag `1.2.3` becomes
-`1.2.3+git1-0~2026.06.14.22.00`.
+`1.2.3+git1-0~2026.06.14.22.00+gabcdef123456`. The SHA suffix is only for
+traceability because it comes after the timestamp.
 
 
 ## `SKIP_ROS_REPOSITORY`

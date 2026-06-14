@@ -133,7 +133,8 @@ for PKG_PATH in $(colcon list --topological-order --paths-only || catkin_topolog
   else
     UPSTREAM_VERSION="0+git$(git rev-list --count HEAD)"
   fi
-  DEBIAN_REVISION="${DEBIAN_REVISION_PREFIX}$(date +%Y.%m.%d.%H.%M)"
+  COMMIT_SHA="$(git rev-parse --short=12 HEAD)"
+  DEBIAN_REVISION="${DEBIAN_REVISION_PREFIX}$(date +%Y.%m.%d.%H.%M)+g${COMMIT_SHA}"
   sed -i "1 s@([^)]*)@(${UPSTREAM_VERSION}-${DEBIAN_REVISION})@" debian/changelog
 
   # https://github.com/ros-infrastructure/bloom/pull/643
