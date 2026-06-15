@@ -31,6 +31,9 @@ inputs:
   COLCON_DEFAULTS_FILE:
     description: Defaults file for colcon. Can be used to restrict the packages to build.
     required: false
+  PACKAGE_GROUP:
+    description: Select only packages whose package.xml has member_of_group set to this group.
+    required: false
   DEBIAN_REVISION_PREFIX:
     description: Prefix prepended to timestamp Debian revisions. For example, "0~" makes generated packages sort below official release packages.
     required: false
@@ -92,6 +95,7 @@ runs:
         DEB_ARCH: ${{ inputs.DEB_ARCH }}
         ROSDEP_SOURCE: ${{ inputs.ROSDEP_SOURCE }}
         COLCON_DEFAULTS_FILE: ${{ inputs.COLCON_DEFAULTS_FILE }}
+        PACKAGE_GROUP: ${{ inputs.PACKAGE_GROUP }}
         DEBIAN_REVISION_PREFIX: ${{ inputs.DEBIAN_REVISION_PREFIX }}
         SKIP_ROS_REPOSITORY: ${{ inputs.SKIP_ROS_REPOSITORY }}
         SKIP_PACKAGES: ${{ inputs.SKIP_PACKAGES }}

@@ -46,6 +46,11 @@ list:
     - package2
 ```
 
+## `PACKAGE_GROUP`
+
+Select only packages whose `package.xml` contains
+`<member_of_group>PACKAGE_GROUP</member_of_group>`.
+
 ## `DEBIAN_REVISION_PREFIX`
 
 Prefix prepended to timestamp Debian revisions.

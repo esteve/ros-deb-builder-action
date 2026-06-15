@@ -90,9 +90,59 @@ if [ -d src ]; then
   COLCON_BASE_PATH_ARGS="--base-paths src"
 fi
 
-for PKG in $(colcon list $COLCON_BASE_PATH_ARGS --topological-order --names-only || catkin_topological_order --only-names); do
+SELECTED_PACKAGE_PATHS="$APT_REPO/selected-package-paths.txt"
+if [ -n "$PACKAGE_GROUP" ]; then
+  FILTER_GROUP=1
+else
+  FILTER_GROUP=
+fi
+
+filter_package_group() {
+  if [ -z "$FILTER_GROUP" ]; then
+    cat
+    return
+  fi
+  while IFS= read -r path; do
+    [ -n "$path" ] || continue
+    if python3 - "$PACKAGE_GROUP" "$path" <<'PY'
+import sys
+import xml.etree.ElementTree as ET
+
+group = sys.argv[1]
+path = sys.argv[2]
+try:
+    root = ET.parse(path.rstrip('/') + '/package.xml').getroot()
+except Exception:
+    raise SystemExit(1)
+raise SystemExit(
+    0 if any((elem.text or '').strip() == group for elem in root.findall('member_of_group')) else 1
+)
+PY
+    then
+      printf '%s\n' "$path"
+    fi
+  done
+}
+
+colcon_package_paths() {
+  colcon list $COLCON_BASE_PATH_ARGS --topological-order --paths-only "$@" 2>/dev/null || catkin_topological_order --only-folders
+}
+
+colcon_package_paths | filter_package_group > "$SELECTED_PACKAGE_PATHS"
+
+if [ ! -s "$SELECTED_PACKAGE_PATHS" ]; then
+  if [ -n "$PACKAGE_GROUP" ]; then
+    echo "No packages selected for package group: $PACKAGE_GROUP"
+  else
+    echo "No packages selected"
+  fi
+  exit 1
+fi
+
+while IFS= read -r PKG_PATH; do
+  PKG="$(COLCON_DEFAULTS_FILE="" colcon list --base-paths "$PKG_PATH" --topological-order --names-only || basename "$PKG_PATH")"
   printf "%s:\n  %s:\n  - %s\n" "$PKG" "$DISTRIBUTION" "ros-$ROS_DEB$(printf '%s' "$PKG" | tr '_' '-')" >> "$APT_REPO/local.yaml"
-done
+done < "$SELECTED_PACKAGE_PATHS"
 echo "yaml file://$APT_REPO/local.yaml $ROS_DISTRO" > "$APT_REPO/1-local.list"
 echo "$ROSDEP_SOURCE" > "$APT_REPO/2-remote.list"
 
@@ -103,12 +153,12 @@ echo "Run sbuild"
 # Don't build tests
 export DEB_BUILD_OPTIONS=nocheck
 
-TOTAL="$( (colcon list $COLCON_BASE_PATH_ARGS --topological-order --names-only || catkin_topological_order --only-names) | wc -l)"
+TOTAL="$(wc -l < "$SELECTED_PACKAGE_PATHS")"
 COUNT=1
 
 test -n "$DEB_ARCH" && set -- --arch="$DEB_ARCH" "$@"
 
-for PKG_PATH in $(colcon list $COLCON_BASE_PATH_ARGS --topological-order --paths-only || catkin_topological_order --only-folders); do
+while IFS= read -r PKG_PATH; do
   echo "::group::Building $COUNT/$TOTAL: $PKG_PATH"
   (
   cd "$PKG_PATH"
@@ -158,7 +208,7 @@ for PKG_PATH in $(colcon list $COLCON_BASE_PATH_ARGS --topological-order --paths
   )
   COUNT=$((COUNT+1))
   echo "::endgroup::"
-done
+done < "$SELECTED_PACKAGE_PATHS"
 
 rm -r "$APT_REPO/ros"
 
